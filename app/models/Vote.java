@@ -1,10 +1,17 @@
 package models;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+import play.db.jpa.Model;
+
 /**
  * Typesafe constants for voting.
  * @author aaron
  *
  */
-public enum Vote {
-	UP,DOWN;
+@Entity
+public class Vote extends Model{
+	static Vote UP= new Vote(),DOWN=new Vote();
 }
 

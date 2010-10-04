@@ -6,12 +6,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapKey;
+import javax.persistence.MappedSuperclass;
 
 import play.db.jpa.Model;
 
-@javax.persistence.Entity
+@Entity
 public abstract class Post extends Model {
 	public String title;
 	public Date postedAt;
@@ -23,7 +28,9 @@ public abstract class Post extends Model {
 	public User author;
 	
 	private Date timestamp;
-	private Map<User,Vote> votes;
+	
+	@ManyToMany
+	public Map<User,Vote> votes;
 	
 	public Post(User o, Date time, String desc){
 		assert ! (o == null || time == null ||desc == null);
@@ -43,8 +50,10 @@ public abstract class Post extends Model {
 	public String getText (  ) {
 		return content;
 	}
-	public void setText ( String value  ) {
+	public Post setText ( String value  ) {
 		content = value;
+		this.save();
+		return this;
 	}
 	// Operations
 	/**
@@ -54,6 +63,7 @@ public abstract class Post extends Model {
 	 */
 	public void vote (Vote v, User user) {
 		votes.put(user,v);
+		this.save();
 	}
 	
 	public int getRating() {
@@ -78,7 +88,7 @@ public abstract class Post extends Model {
 	
 	public void deleteVote(User user) {
 		votes.remove(user);
-		
+		this.save();
 	}
 
 	public User getOwner() {

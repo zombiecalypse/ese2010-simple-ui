@@ -1,26 +1,39 @@
 package models;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 import play.db.jpa.Model;
 
 @javax.persistence.Entity
 public class User extends Model {
+	
 	private String name;
-	private final Set<Question> questions;
-	private final Set<Answer> answers;
-	private final Set<Post> votes;
+	
+	@OneToMany(targetEntity=Post.class,mappedBy="author", cascade=CascadeType.ALL)
+	public List<Question> questions;
+	
+	@OneToMany(targetEntity=Post.class,mappedBy="author", cascade=CascadeType.ALL)
+	public List<Answer> answers;
+	
+	@ManyToMany
+	public List<Post> votes;
 	
 
 	public User(String the_name){
 		assert ! (the_name == "" ||
 				the_name == null);
 		name = the_name;
-		questions = new HashSet<Question>();
-		answers = new HashSet<Answer>();
-		votes = new HashSet<Post>();
+		questions = new ArrayList<Question>();
+		answers = new ArrayList<Answer>();
+		votes = new ArrayList<Post>();
 	}
 	
 	public String getName(  ) {
