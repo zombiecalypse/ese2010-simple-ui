@@ -2,18 +2,21 @@ package models;
 
 import java.util.Date;
 
-public class Answer extends Content {
-	private final Question question;
+import javax.persistence.ManyToOne;
+
+public class Answer extends Post {
+	@ManyToOne
+	public Question question;
 	
-	public Answer(Question thequestion,User owner,Date t, String desc) throws MissingArgument{
+	public Answer(Question thequestion,User owner,Date t, String desc){
 		super(owner,t,desc);
-		if (thequestion == null) throw new MissingArgument();
+		assert !(thequestion == null);
 		question = thequestion;
 		question.addAnswer(this);
 	}
-	public Answer(Question thequestion,User owner, String desc) throws MissingArgument{
+	public Answer(Question thequestion,User owner, String desc){
 		super(owner,desc);
-		if (thequestion == null) throw new MissingArgument();
+		assert !(thequestion == null);
 		question = thequestion;
 		question.addAnswer(this);
 	}
@@ -22,9 +25,10 @@ public class Answer extends Content {
 		return question;
 	}
 	
-	public void delete(){
-		super.delete();
+	public void deleteMe(){
+		super.deleteMe();
 		question.deleteAnswer(this);
+		delete(); 	
 	}
 }
 

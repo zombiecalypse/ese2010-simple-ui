@@ -1,36 +1,49 @@
 package models;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.OneToMany;
 
 /**
  * Questions that a user may ask.
  * @author aaron
  *
  */
-public class Question extends Content {
-	private Set<Answer> answers;
+public class Question extends Post {
 
-	public Question(User owner,Date t, String desc) throws MissingArgument{
+	@OneToMany(mappedBy="post", cascade=CascadeType.ALL)
+	public List<Answer> answers;
+
+	public Question(User owner,Date t, String desc){
 		super(owner,t,desc);
-		answers = new HashSet<Answer>();
+		this.answers = new ArrayList<Answer>();
 	}
 	
-	public Question(User owner, String desc) throws MissingArgument{
+	public Question(User owner, String desc){
 		super(owner,desc);
+		this.answers = new ArrayList<Answer>();
 	}
 	
-	public Set<Answer> getAnswers() {
+	public List<Answer> getAnswers() {
 		return answers;
 	}
 	
-	public void addAnswer(Answer a){
-		answers.add(a);
+	public Question addAnswer(Answer a){
+		this.answers.add(a);
+		this.save();
+		return this;
 	}
 	
-	public void deleteAnswer(Answer a){
+	public Question deleteAnswer(Answer a){
 		answers.remove(a);
+		this.save();
+		return this;
 	}
+	
 }
 

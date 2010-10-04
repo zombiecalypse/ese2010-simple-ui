@@ -6,22 +6,34 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 
-public abstract class Content {
+import play.db.jpa.Model;
+
+@javax.persistence.Entity
+public abstract class Post extends Model {
+	public String title;
+	public Date postedAt;
+	    
+    @Lob
+	public String content;
+	    
+	@ManyToOne
+	public User author;
+	
 	private Date timestamp;
-	private String text;
-	private User owner;
 	private Map<User,Vote> votes;
 	
-	public Content(User o, Date time, String desc) throws MissingArgument{
-		if (o == null || time == null ||desc == null) throw new MissingArgument();
+	public Post(User o, Date time, String desc){
+		assert ! (o == null || time == null ||desc == null);
 		timestamp = time;
-		text = desc;
+		content = desc;
 		votes = new HashMap<User,Vote>();
-		owner = o;
+		author = o;
 	}
 
-	public Content(User owner2, String desc) throws MissingArgument {
+	public Post(User owner2, String desc){
 		this(owner2,Calendar.getInstance().getTime(),desc);
 	}
 	// Accessor Methods
@@ -29,10 +41,10 @@ public abstract class Content {
 		return timestamp;
 	}
 	public String getText (  ) {
-		return text;
+		return content;
 	}
 	public void setText ( String value  ) {
-		text = value;
+		content = value;
 	}
 	// Operations
 	/**
@@ -57,10 +69,11 @@ public abstract class Content {
 		return result;
 	}
 	
-	public void delete(){
+	public void deleteMe(){
 		for (User user : votes.keySet()){
 			user.deleteVote(this);
 		}
+		delete();
 	}
 	
 	public void deleteVote(User user) {
@@ -69,7 +82,7 @@ public abstract class Content {
 	}
 
 	public User getOwner() {
-		return owner;
+		return author;
 	}
 	
 	public String toString(){

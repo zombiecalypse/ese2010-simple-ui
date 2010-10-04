@@ -1,18 +1,62 @@
 #{extends 'main.html' /}
 #{set title:'Home' /}
-
-<h1>Our Questions!!</h1>
-<h2>Post Question:</h2>
-#{form @Questions.postQuestion()}
-    <p>
-        <label for="author">Your name: </label>
-        <input type="text" name="author" id="author" />
-    </p>
-    <p>
-        <label for="content">Your question: </label>
-        <textarea name="content" id="content"></textarea>
-    </p>
-    <p>
-        <input type="submit" value="Submit your question" />
-    </p>
-#{/form}
+ 
+#{if newestQuestion}
+    <div class="Question">
+        <h2 class="Question-title">
+            <a href="#">${newestQuestion.title}</a>
+        </h2>
+        <div class="Question-metadata">
+            <span class="Question-author">by ${newestQuestion.author.fullname}</span>
+            <span class="Question-date">${newestQuestion.postedAt.format('MMM dd')}</span>
+            <span class="Question-Answers">
+                &nbsp;|&nbsp; 
+                ${newestQuestion.Answers.size() ?: 'no'} 
+                Answer${newestQuestion.Answers.size().pluralize()}</a>
+                #{if newestQuestion.Answers}
+                    , latest by ${newestQuestion.Answers[0].author}
+                #{/if}
+            </span>
+        </div>
+        <div class="Question-content">
+            ${newestQuestion.content.nl2br()}
+        </div>
+    </div>
+    
+    #{if olderQuestions.size() > 1}
+        <div class="older-Questions">    
+            <h3>Older Questions <span class="from">from this blog</span></h3>
+        
+            #{list items:olderQuestions, as:'oldQuestion'}
+                <div class="Question">
+                    <h2 class="Question-title">
+                        <a href="#">${oldQuestion.title}</a>
+                    </h2>
+                    <div class="Question-metadata">
+                        <span class="Question-author">
+                            by ${oldQuestion.author.fullname}
+                        </span>
+                        <span class="Question-date">
+                            ${oldQuestion.QuestionedAt.format('dd MMM yy')}
+                        </span>
+                        <div class="Question-Answers">
+                            ${oldQuestion.Answers.size() ?: 'no'} 
+                            Answer${oldQuestion.Answers.size().pluralize()}
+                            #{if oldQuestion.Answers}
+                                - latest by ${oldQuestion.Answers[0].author}
+                            #{/if}
+                        </div>
+                    </div>
+                </div>
+            #{/list}
+        </div>
+        
+    #{/if}
+    
+#{/if}
+ 
+#{else}
+    <div class="empty">
+        There is currently nothing to read here.
+    </div>
+#{/else}
